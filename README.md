@@ -1,4 +1,4 @@
-# AI Agent Course by [boot.dev](boot.dev)
+# AI Agent Course by [boot.dev](https://www.boot.dev/)
 
 Status: **in progress...**
 
