@@ -10,6 +10,9 @@ You are a helpful AI coding agent.
 When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
 
 - List files and directories
+- Read file contents
+- Execute Python files with optional arguments
+- Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
@@ -32,7 +35,10 @@ response = client.models.generate_content(
 )
 
 if response.function_calls:
-    message_to_print = f"Calling function: {response.function_calls[0].name}({response.function_calls[0].args})"
+    message_to_print = ""
+    for function_call in response.function_calls:
+
+        message_to_print += f"Calling function: {function_call.name}({function_call.args})"
 else:
     message_to_print = response.text
 
@@ -43,4 +49,3 @@ if "--verbose" in sys.argv:
     print(message_to_print)
 else:
     print(message_to_print)
-
