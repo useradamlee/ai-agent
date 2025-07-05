@@ -42,9 +42,9 @@ schema_get_file_content = genai.types.FunctionDeclaration(
     parameters=genai.types.Schema(
         type=genai.types.Type.OBJECT,
         properties={
-            "directory": genai.types.Schema(
+            "file_path": genai.types.Schema(
                 type=genai.types.Type.STRING,
-                description="The directory to get the content of a files from, relative to the working directory. If not provided, get the content of a files in the working directory itself.",
+                description="The file_path to get the content of a files from, relative to the working directory. If not provided, get the content of a files in the working directory itself.",
             ),
         },
     ),
@@ -56,9 +56,9 @@ schema_run_python_file = genai.types.FunctionDeclaration(
     parameters=genai.types.Schema(
         type=genai.types.Type.OBJECT,
         properties={
-            "directory": genai.types.Schema(
+            "file_path": genai.types.Schema(
                 type=genai.types.Type.STRING,
-                description="The directory to run code in a file from, relative to the working directory. If not provided, run code from a file in the working directory itself.",
+                description="The file_path to run code in a file from, relative to the working directory. If not provided, run code from the file_path in the working directory itself.",
             ),
         },
     ),
@@ -70,9 +70,9 @@ schema_write_file = genai.types.FunctionDeclaration(
     parameters=genai.types.Schema(
         type=genai.types.Type.OBJECT,
         properties={
-            "directory": genai.types.Schema(
+            "file_path": genai.types.Schema(
                 type=genai.types.Type.STRING,
-                description="The directory to write in a specified file from, relative to the working directory. If not provided, write specified file in the working directory itself.",
+                description="The file_path to write in a specified file from, relative to the working directory. If not provided, write specified file in the working directory itself.",
             ),
             "content": genai.types.Schema(
                 type=genai.types.Type.STRING, 

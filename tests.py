@@ -1,10 +1,10 @@
-from functions.get_files_info import get_files_info
-from functions.get_file_content import get_file_content
-from functions.write_file import write_file
+# from functions.get_files_info import get_files_info
+# from functions.get_file_content import get_file_content
+# from functions.write_file import write_file
 from functions.run_python import run_python_file
 
 if __name__ == "__main__":
-    # first test: 
+    # first test:
 
     '''
     print(get_files_info("calculator", "."))
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     '''
     # second test:
     # print(get_file_content("calculator", "lorem.txt"))
-    
+
     # third test:
 
     '''

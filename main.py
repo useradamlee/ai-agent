@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 from google import genai
 from functions.get_files_info import schema_get_files_info, available_functions
+from functions.call_function import call_function
 
 system_prompt = """
 You are a helpful AI coding agent.
@@ -34,18 +35,28 @@ response = client.models.generate_content(
     )
 )
 
-if response.function_calls:
-    message_to_print = ""
-    for function_call in response.function_calls:
+verbose = "--verbose" in sys.argv
 
-        message_to_print += f"Calling function: {function_call.name}({function_call.args})"
+if response.candidates[0].content.parts[0].function_call:
+    function_call_part = response.candidates[0].content.parts[0].function_call
+    function_call_result = call_function(function_call_part, verbose)
+    
+    try:
+        response_data = function_call_result.parts[0].function_response.response
+        if verbose:
+            if 'result' in response_data:
+                result_text = response_data['result']
+                print(f"-> {result_text}")
+            else:
+                print(f"-> {response_data}")
+        print("\nFunction Completed!\n")
+    except (AttributeError, IndexError):
+        raise Exception("Invalid function call result structure")
 else:
     message_to_print = response.text
+    print(message_to_print)
 
-if "--verbose" in sys.argv:
+if verbose:
     print(f"User prompt: {user_input}")
     print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
     print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-    print(message_to_print)
-else:
-    print(message_to_print)
