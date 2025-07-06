@@ -60,7 +60,6 @@ for _ in range(20):
 
     if function_calls:
         for function_call_part in function_calls:
-            # call_function must return a Content object, which you append directly
             messages.append(call_function(function_call_part, verbose))
     else:
         if final_assistant_text:
