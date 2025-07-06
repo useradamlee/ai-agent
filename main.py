@@ -4,18 +4,22 @@ from dotenv import load_dotenv
 from google import genai
 from functions.get_files_info import schema_get_files_info, available_functions
 from functions.call_function import call_function
+from google.genai.types import Content, Part
 
 system_prompt = """
-You are a helpful AI coding agent.
+Your goal is to provide a comprehensive answer using the tools, or to fix the code as requested
 
-When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
+When a user asks a question or makes a request, make a function call plan. 
 
+You can perform the following operations:
 - List files and directories
 - Read file contents
 - Execute Python files with optional arguments
 - Write or overwrite files
 
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+
+*Only* give a response that isn't a tool call once you believes you has completed the task and no more tool calls are needed 
 """
 
 load_dotenv()
@@ -27,36 +31,39 @@ if len(sys.argv) < 2:
 
 user_input = sys.argv[1]
 
-response = client.models.generate_content(
-    model='gemini-2.0-flash-001', 
-    contents=user_input,
-    config=genai.types.GenerateContentConfig(
-    tools=[available_functions], system_instruction=system_prompt
+messages = []
+messages.append(Content(role="user", parts=[Part(text=user_input)]))
+
+# loop the agent
+for _ in range(20):
+    response = client.models.generate_content(
+        model='gemini-2.0-flash-001',
+        contents=messages,
+        config=genai.types.GenerateContentConfig(
+            tools=[available_functions],
+            system_instruction=system_prompt,
+        )
     )
-)
+    verbose = "--verbose" in sys.argv
 
-verbose = "--verbose" in sys.argv
+    function_calls = []
+    final_assistant_text = None
 
-if response.candidates[0].content.parts[0].function_call:
-    function_call_part = response.candidates[0].content.parts[0].function_call
-    function_call_result = call_function(function_call_part, verbose)
-    
-    try:
-        response_data = function_call_result.parts[0].function_response.response
-        if verbose:
-            if 'result' in response_data:
-                result_text = response_data['result']
-                print(f"-> {result_text}")
-            else:
-                print(f"-> {response_data}")
-        print("\nFunction Completed!\n")
-    except (AttributeError, IndexError):
-        raise Exception("Invalid function call result structure")
-else:
-    message_to_print = response.text
-    print(message_to_print)
+    for candidate in response.candidates:
+        messages.append(candidate.content)
+        for part in candidate.content.parts:
+            if part.function_call is not None:
+                function_calls.append(part.function_call)
+            elif part.text:
+                # Only use assistant's text if there were NO function calls
+                final_assistant_text = part.text
 
-if verbose:
-    print(f"User prompt: {user_input}")
-    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    if function_calls:
+        for function_call_part in function_calls:
+            # call_function must return a Content object, which you append directly
+            messages.append(call_function(function_call_part, verbose))
+    else:
+        if final_assistant_text:
+            print("Final response:")
+            print(final_assistant_text)
+        break

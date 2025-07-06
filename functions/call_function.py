@@ -4,6 +4,7 @@ from functions.get_file_content import get_file_content
 from functions.write_file import write_file
 from functions.run_python import run_python_file
 
+
 available_functions = {
     "get_files_info": get_files_info,
     "get_file_content": get_file_content,
