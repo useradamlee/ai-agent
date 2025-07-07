@@ -1,8 +1,8 @@
 # AI Agent Course by [boot.dev](https://www.boot.dev/)
 
-Status: **in progress...**
+Status: **Functional and completed (for now)**
 
 - [x] Chapter 1
 - [x] Chapter 2
 - [x] Chapter 3
-- [ ] Chapter 4
+- [x] Chapter 4
