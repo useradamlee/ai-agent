@@ -1,4 +1,4 @@
-# AI Agent Course by [boot.dev](https://www.boot.dev/)
+# [AI Agent Course](https://www.boot.dev/courses/build-ai-agent-python) by [boot.dev](https://www.boot.dev/)
 
 Status: **Functional and completed (for now)**
 
